@@ -12,7 +12,7 @@
         }
     ],
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit --testdox tests"
     },
     "require": {
         "php": ">=7.4"
