@@ -4,8 +4,7 @@
     "type": "library",
     "keywords": ["bit", "bits", "array", "bitset"],
     "homepage": "https://github.com/nikeee/php-bit-array",
-    "license": "LGPL-3.0",
-    "version": "0.1.0",
+    "license": "LGPL-3.0-or-later",
     "authors": [
         {
             "name": "Niklas Mollenhauer",
