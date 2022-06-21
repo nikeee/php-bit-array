@@ -3,6 +3,7 @@
 namespace Nikeee\BitArray;
 
 use InvalidArgumentException;
+use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 use TRegx\DataProvider\DataProviders;
 
@@ -65,6 +66,67 @@ final class BitArrayTest extends TestCase
         $this->assertEquals(2, $arr->popCount(true));
     }
 
+    /** @dataProvider provideBitArrayImplementation */
+    function testSimpleGetAndSet($bitArrayClass)
+    {
+        $arr = $bitArrayClass::create(24)
+            ->set(0, true)
+            ->set(1, true)
+            ->set(5, true)
+            ->set(7, true)
+            ->set(10, true)
+            ->set(19, true);
+
+        $this->assertEquals(true, $arr->get(0));
+        $this->assertEquals(true, $arr->get(1));
+        $this->assertEquals(true, $arr->get(5));
+        $this->assertEquals(true, $arr->get(7));
+        $this->assertEquals(true, $arr->get(10));
+        $this->assertEquals(true, $arr->get(19));
+        $this->assertEquals(false, $arr->get(23));
+
+        $this->assertEquals(24, $arr->getNumberOfBits());
+
+        $arr->clear();
+        $this->assertEquals(24, $arr->getNumberOfBits());
+
+        $this->assertEquals(false, $arr->get(0));
+        $this->assertEquals(false, $arr->get(1));
+        $this->assertEquals(false, $arr->get(5));
+        $this->assertEquals(false, $arr->get(7));
+        $this->assertEquals(false, $arr->get(10));
+        $this->assertEquals(false, $arr->get(19));
+        $this->assertEquals(false, $arr->get(23));
+    }
+
+    /** @dataProvider provideBitArrayImplementation */
+    function testAt($bitArrayClass)
+    {
+        $arr = $bitArrayClass::create(8);
+
+        $arr->set(0, true);
+        $this->assertEquals(true, $arr->at(0));
+
+        $arr->set(1, true);
+        $this->assertEquals(true, $arr->at(0));
+        $this->assertEquals(true, $arr->at(1));
+
+        $arr->set(7, true);
+        $this->assertEquals(true, $arr->at(0));
+        $this->assertEquals(true, $arr->at(1));
+        $this->assertEquals(true, $arr->at(7));
+        $this->assertEquals(true, $arr->at(-1));
+    }
+
+    /** @dataProvider provideBitArrayImplementation */
+    function testAtNoWrapAround($bitArrayClass)
+    {
+        // JS's Array.at does not handle wrap-around (`[0].at(-10)`), so we also don't do it
+        $this->expectException(OutOfBoundsException::class);
+
+        $arr = $bitArrayClass::create(8);
+        $arr->at(-10);
+    }
 
     // #region Providers
 
