@@ -1,0 +1,32 @@
+{
+    "name": "nikeee/bit-array",
+    "description": "A bit array implementation for PHP",
+    "type": "library",
+    "keywords": ["bit", "bits", "array", "bitset"],
+    "homepage": "https://github.com/nikeee/php-bit-array",
+    "license": "LGPL-3.0",
+    "version": "0.1.0",
+    "authors": [
+        {
+            "name": "Niklas Mollenhauer",
+            "email": "nikeee@outlook.com"
+        }
+    ],
+    "scripts": {
+        "test": "phpunit"
+    },
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nikeee\\BitArray\\": "src/"
+        }
+    },
+    "suggest": {
+        "ext-gmp": "*"
+    }
+}
