@@ -4,6 +4,8 @@
 namespace Nikeee\BitArray;
 
 use GMP;
+use InvalidArgumentException;
+use OutOfBoundsException;
 
 class GmpBitArray extends BitArray
 {
@@ -17,7 +19,7 @@ class GmpBitArray extends BitArray
         $this->numberOfBits = $numberOfBits;
     }
 
-    public static function fromRawString(string $rawString): self
+    static function fromRawString(string $rawString): self
     {
         // For some reason, strlen can be used to get the number of bytes in a binary string:
         // https://stackoverflow.com/a/53592972
@@ -25,7 +27,7 @@ class GmpBitArray extends BitArray
 
         $n = gmp_import($rawString);
         if ($n === false)
-            throw new \InvalidArgumentException('Could not parse $rawString');
+            throw new InvalidArgumentException('Could not parse $rawString');
         return new self($n, $byteCount * 8);
     }
 
@@ -36,12 +38,18 @@ class GmpBitArray extends BitArray
 
     function get(int $index): bool
     {
+        if (0 > $index || $index > $this->numberOfBits)
+            throw new OutOfBoundsException();
+
         // Use `$this->numberOfBits - $index` as index because GMP layouts the data in reversed order
         return gmp_testbit($this->n, $this->numberOfBits - $index);
     }
 
     function set(int $index, bool $value): self
     {
+        if (0 > $index || $index > $this->numberOfBits)
+            throw new OutOfBoundsException();
+
         // Use `$this->numberOfBits - $index` as index because GMP layouts the data in reversed order
         gmp_setbit($this->n, $this->numberOfBits - $index, $value);
         return $this;
@@ -57,28 +65,15 @@ class GmpBitArray extends BitArray
 
     function clear(): self
     {
-        $this->n = gmp_init('0');
+        return $this->fill(false);
     }
 
     function fill(bool $value): self
     {
-        if ($value) {
-            // TODO: Benchmark this:
-            /*
-            // Maybe this is not the fastest solution, but it works
-            $n = $this->n;
-            for ($i = 0; $i < $this->numberOfBits; ++$i)
-                gmp_setbit($n, $i, true);
-            return $this;
-            */
-
-            // We're ensured that $numberOfBits is always divisible by 8
-            // We can construct a new GMP number that parses (n/8) * '0xFF'
-            $binaryString = str_repeat("\xff", (int)($this->numberOfBits / 8));
-            $this->n = gmp_import($binaryString);
-            return $this;
-        }
-        return $this->clear();
+        $this->n = $value
+            ? self::buildOnes($this->numberOfBits)
+            : gmp_init('0');
+        return $this;
     }
 
     function popCount(bool $value = true): int
@@ -89,12 +84,63 @@ class GmpBitArray extends BitArray
             : $this->numberOfBits - $ones;
     }
 
-    public function __serialize(): array
+    function applyBitwiseNot(): void
+    {
+        $ones = self::buildOnes($this->numberOfBits);
+        $this->n = gmp_xor($this->n, $ones);
+    }
+
+    private static function buildOnes(int $numberOfBits): GMP
+    {
+        // We're ensured that $numberOfBits is always divisible by 8
+        // We can construct a new GMP number that parses (n/8) * '0xFF'
+        $binaryString = str_repeat("\xff", (int)($numberOfBits / 8));
+        return gmp_import($binaryString);
+    }
+
+    function applyBitwiseAnd(BitArray $other): void
+    {
+        if ($this->numberOfBits !== $other->numberOfBits)
+            throw new InvalidArgumentException('Both BitArrays must have the same length');
+
+        if ($other instanceof GmpBitArray) {
+            $this->n = gmp_and($this->n, $other->n);
+            return;
+        }
+        parent::applyBitwiseAnd($other);
+    }
+
+    function applyBitwiseOr(BitArray $other): void
+    {
+        if ($this->numberOfBits !== $other->numberOfBits)
+            throw new InvalidArgumentException('Both BitArrays must have the same length');
+
+        if ($other instanceof GmpBitArray) {
+            $this->n = gmp_or($this->n, $other->n);
+            return;
+        }
+        parent::applyBitwiseOr($other);
+    }
+
+    function applyBitwiseXor(BitArray $other): void
+    {
+        if ($this->numberOfBits !== $other->numberOfBits)
+            throw new InvalidArgumentException('Both BitArrays must have the same length');
+
+        if ($other instanceof GmpBitArray) {
+            $this->n = gmp_xor($this->n, $other->n);
+            return;
+        }
+        parent::applyBitwiseXor($other);
+    }
+
+
+    function __serialize(): array
     {
         return [$this->toRawString()];
     }
 
-    public function __unserialize(array $data): void
+    function __unserialize(array $data): void
     {
         $s = self::fromRawString($data[0]);
         $this->n = $s->n;

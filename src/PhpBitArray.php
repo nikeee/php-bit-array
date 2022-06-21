@@ -2,7 +2,9 @@
 
 namespace Nikeee\BitArray;
 
-// TODO: Maybe subclass this with a version that uses GMP under the hood (or some other conditional magic)
+use InvalidArgumentException;
+use OutOfBoundsException;
+
 class PhpBitArray extends BitArray
 {
     private array $byteBuffer;
@@ -15,7 +17,7 @@ class PhpBitArray extends BitArray
         $this->numberOfBits = count($byteBuffer) * 8;
     }
 
-    public static function fromRawString(string $rawString): PhpBitArray
+    static function fromRawString(string $rawString): PhpBitArray
     {
         // See: https://stackoverflow.com/a/11466734
         $byteBuffer = unpack('C*', $rawString); // Caution: returns 1-based indexes
@@ -23,24 +25,24 @@ class PhpBitArray extends BitArray
         return new self($byteBuffer);
     }
 
-    public function toRawString(): string
+    function toRawString(): string
     {
         return pack('C*', ...$this->byteBuffer);
     }
 
-    public static function create(int $size): PhpBitArray
+    static function create(int $size): PhpBitArray
     {
         if ($size === 0 || ($size % 8) !== 0)
-            throw new \InvalidArgumentException('$size must be a multiple of 8 and greater than 0');
+            throw new InvalidArgumentException('$size must be a multiple of 8 and greater than 0');
 
         $byteBuffer = array_fill(0, $size, 0);
         return new self($byteBuffer);
     }
 
-    public function set(int $index, bool $value): self
+    function set(int $index, bool $value): self
     {
         if (0 > $index || $index > $this->numberOfBits)
-            throw new \OutOfBoundsException();
+            throw new OutOfBoundsException();
 
         $bitValue = (int)$value;
 
@@ -58,10 +60,10 @@ class PhpBitArray extends BitArray
         return $this;
     }
 
-    public function get(int $index): bool
+    function get(int $index): bool
     {
         if (0 > $index || $index > $this->numberOfBits)
-            throw new \OutOfBoundsException();
+            throw new OutOfBoundsException();
 
         $indexOfByteInBuffer = intdiv($index, 8);
         $indexOfBitInByte = 7 - ($index % 8); // "7 - " makes the MSB the bit with index 0 (instead of the LSB)
@@ -71,7 +73,7 @@ class PhpBitArray extends BitArray
         return ($byte & (1 << $indexOfBitInByte)) !== 0;
     }
 
-    public function at(int $index): bool
+    function at(int $index): bool
     {
         $positiveIndex = $index < 0
             ? $this->numberOfBits + ($index % $this->numberOfBits)
@@ -79,19 +81,19 @@ class PhpBitArray extends BitArray
         return $this->get($positiveIndex);
     }
 
-    public function clear(): self
+    function clear(): self
     {
         return $this->fill(false);
     }
 
-    public function fill(bool $value): self
+    function fill(bool $value): self
     {
         $v = $value ? 255 : 0;
         $this->byteBuffer = array_fill(0, $this->numberOfBits, $v);
         return $this;
     }
 
-    public function popCount(bool $value = true): int
+    function popCount(bool $value = true): int
     {
         // gmp_popcount is actually _way_ faster than this
         // 10 rounds yield this:
@@ -138,7 +140,7 @@ class PhpBitArray extends BitArray
     }
 
     /*
-    public function iterate()
+    function iterate()
     {
         $byteCount = intdiv($this->size, 8);
         $buffer = $this->byteBuffer;
@@ -158,7 +160,7 @@ class PhpBitArray extends BitArray
     }
     */
 
-    public function getIndicesWithValue(bool $needleValue): array
+    function getIndicesWithValue(bool $needleValue): array
     {
         $res = [];
 
@@ -184,52 +186,54 @@ class PhpBitArray extends BitArray
      *
      * Time complexity: O(n) with n being the size of the array
      */
-    public function negated(): PhpBitArray
+    function applyBitwiseNot(): void
     {
-        $resultBuffer = $this->byteBuffer; // PHP copies arrays by default, so this is a copy
         for ($i = 0; $i < $this->numberOfBits; ++$i)
-            $resultBuffer[$i] |= (~$resultBuffer[$i]) & 0xff;
-
-        return new self($resultBuffer);
+            $this->byteBuffer[$i] |= (~$this->byteBuffer[$i]) & 0xff;
     }
 
-    public static function bitwiseAnd(PhpBitArray $a, PhpBitArray $b): PhpBitArray
+    function applyBitwiseAnd(BitArray $other): void
     {
-        if ($a->numberOfBits !== $b->numberOfBits)
-            throw new \InvalidArgumentException('Both BitArrays must have the same length');
+        if ($this->numberOfBits !== $other->numberOfBits)
+            throw new InvalidArgumentException('Both BitArrays must have the same length');
 
-        $resultBuffer = $a->byteBuffer; // PHP copies arrays by default, so this is a copy
-        for ($i = 0; $i < $a->numberOfBits; ++$i)
-            $resultBuffer[$i] &= $b->byteBuffer[$i];
-
-        return new self($resultBuffer);
+        if ($other instanceof PhpBitArray) {
+            for ($i = 0; $i < $this->numberOfBits; ++$i)
+                $this->byteBuffer[$i] &= $other->byteBuffer[$i];
+        }
+        parent::applyBitwiseAnd($other);
     }
 
-    public static function bitwiseOr(PhpBitArray $a, PhpBitArray $b): PhpBitArray
+    function applyBitwiseOr(BitArray $other): void
     {
-        if ($a->numberOfBits !== $b->numberOfBits)
-            throw new \InvalidArgumentException('Both BitArrays must have the same length');
+        if ($this->numberOfBits !== $other->numberOfBits)
+            throw new InvalidArgumentException('Both BitArrays must have the same length');
 
-        $resultBuffer = $a->byteBuffer; // PHP copies arrays by default, so this is a copy
-        for ($i = 0; $i < $a->numberOfBits; ++$i)
-            $resultBuffer[$i] |= $b->byteBuffer[$i];
-
-        return new self($resultBuffer);
+        if ($other instanceof PhpBitArray) {
+            for ($i = 0; $i < $this->numberOfBits; ++$i)
+                $this->byteBuffer[$i] |= $other->byteBuffer[$i];
+        }
+        parent::applyBitwiseOr($other);
     }
 
-    public static function bitwiseXor(PhpBitArray $a, PhpBitArray $b): PhpBitArray
+    function applyBitwiseXor(BitArray $other): void
     {
-        if ($a->numberOfBits !== $b->numberOfBits)
-            throw new \InvalidArgumentException('Both BitArrays must have the same length');
+        if ($this->numberOfBits !== $other->numberOfBits)
+            throw new InvalidArgumentException('Both BitArrays must have the same length');
 
-        $resultBuffer = $a->byteBuffer; // PHP copies arrays by default, so this is a copy
-        for ($i = 0; $i < $a->numberOfBits; ++$i)
-            $resultBuffer[$i] ^= $b->byteBuffer[$i];
-
-        return new self($resultBuffer);
+        if ($other instanceof PhpBitArray) {
+            for ($i = 0; $i < $this->numberOfBits; ++$i)
+                $this->byteBuffer[$i] ^= $other->byteBuffer[$i];
+        }
+        parent::applyBitwiseXor($other);
     }
 
-    public function __unserialize(array $data): void
+    function __serialize(): array
+    {
+        return [$this->toRawString()];
+    }
+
+    function __unserialize(array $data): void
     {
         $s = self::fromRawString($data[0]);
         $this->byteBuffer = $s->byteBuffer;
