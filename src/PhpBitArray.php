@@ -8,13 +8,12 @@ use OutOfBoundsException;
 class PhpBitArray extends BitArray
 {
     private array $byteBuffer;
-    /** @readonly */
-    private int $numberOfBits;
 
     private function __construct(array $byteBuffer)
     {
+        $numberOfBits = count($byteBuffer) * 8;
+        parent::__construct($numberOfBits);
         $this->byteBuffer = $byteBuffer;
-        $this->numberOfBits = count($byteBuffer) * 8;
     }
 
     static function fromRawString(string $rawString): PhpBitArray

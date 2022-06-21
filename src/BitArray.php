@@ -4,6 +4,14 @@ namespace Nikeee\BitArray;
 
 abstract class BitArray
 {
+    /** @readonly */
+    protected int $numberOfBits;
+
+    function __construct(int $numberOfBits)
+    {
+        $this->numberOfBits = $numberOfBits;
+    }
+
     abstract function toRawString(): string;
 
     abstract function get(int $index): bool;

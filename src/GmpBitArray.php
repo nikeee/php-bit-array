@@ -10,11 +10,10 @@ use OutOfBoundsException;
 class GmpBitArray extends BitArray
 {
     private GMP $n;
-    /** @readonly */
-    private int $numberOfBits;
 
     private function __construct(GMP $n, int $numberOfBits)
     {
+        parent::__construct($numberOfBits);
         $this->n = $n;
         $this->numberOfBits = $numberOfBits;
     }
