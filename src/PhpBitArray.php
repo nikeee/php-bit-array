@@ -34,7 +34,7 @@ class PhpBitArray extends BitArray
         if ($numberOfBits <= 0 || ($numberOfBits % 8) !== 0)
             throw new InvalidArgumentException('$numberOfBits must be a multiple of 8 and greater than 0');
 
-        $byteBuffer = array_fill(0, $numberOfBits, 0);
+        $byteBuffer = array_fill(0, intdiv($numberOfBits, 8), 0);
         return new self($byteBuffer);
     }
 
@@ -88,7 +88,7 @@ class PhpBitArray extends BitArray
     function fill(bool $value): self
     {
         $v = $value ? 255 : 0;
-        $this->byteBuffer = array_fill(0, $this->numberOfBits, $v);
+        $this->byteBuffer = array_fill(0, intdiv($this->numberOfBits, 8), $v);
         return $this;
     }
 
