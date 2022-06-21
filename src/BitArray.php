@@ -7,6 +7,11 @@ abstract class BitArray
     /** @readonly */
     protected int $numberOfBits;
 
+    function getNumberOfBits(): int
+    {
+        return $this->numberOfBits;
+    }
+
     function __construct(int $numberOfBits)
     {
         $this->numberOfBits = $numberOfBits;
