@@ -27,7 +27,13 @@ abstract class BitArray
 
     abstract function set(int $index, bool $value): self;
 
-    abstract function at(int $index): bool;
+    function at(int $index): bool
+    {
+        $positiveIndex = $index < 0
+            ? $this->numberOfBits + $index // JS's Array.at does not handle wrap-around (`[0].at(-10)`), so we also don't do it
+            : $index;
+        return $this->get($positiveIndex);
+    }
 
     abstract function clear(): self;
 

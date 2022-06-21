@@ -62,14 +62,6 @@ class GmpBitArray extends BitArray
         return $this;
     }
 
-    function at(int $index): bool
-    {
-        $positiveIndex = $index < 0
-            ? $this->numberOfBits + ($index % $this->numberOfBits)
-            : $index;
-        return $this->get($positiveIndex);
-    }
-
     function clear(): self
     {
         return $this->fill(false);
