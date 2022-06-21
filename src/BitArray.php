@@ -2,6 +2,8 @@
 
 namespace Nikeee\BitArray;
 
+use InvalidArgumentException;
+
 abstract class BitArray
 {
     /** @readonly */
@@ -14,6 +16,8 @@ abstract class BitArray
 
     function __construct(int $numberOfBits)
     {
+        if ($numberOfBits <= 0 || ($numberOfBits % 8) !== 0)
+            throw new InvalidArgumentException('$numberOfBits must be a multiple of 8 and greater than 0');
         $this->numberOfBits = $numberOfBits;
     }
 
@@ -102,9 +106,18 @@ abstract class BitArray
 
     static function fromRawString(string $rawString): BitArray
     {
-        if (extension_loaded('gmp')) {
-            return GmpBitArray::fromRawString($rawString);
-        }
-        return PhpBitArray::fromRawString($rawString);
+        return extension_loaded('gmp')
+            ? GmpBitArray::fromRawString($rawString)
+            : PhpBitArray::fromRawString($rawString);
+    }
+
+    static function create(int $numberOfBits): BitArray
+    {
+        if ($numberOfBits <= 0 || ($numberOfBits % 8) !== 0)
+            throw new InvalidArgumentException('$numberOfBits must be a multiple of 8 and greater than 0');
+
+        return extension_loaded('gmp')
+            ? GmpBitArray::create($numberOfBits)
+            : PhpBitArray::create($numberOfBits);
     }
 }

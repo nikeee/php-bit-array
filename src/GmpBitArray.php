@@ -35,6 +35,14 @@ class GmpBitArray extends BitArray
         return gmp_export($this->n);
     }
 
+    static function create(int $numberOfBits): self
+    {
+        if ($numberOfBits <= 0 || ($numberOfBits % 8) !== 0)
+            throw new InvalidArgumentException('$numberOfBits must be a multiple of 8 and greater than 0');
+
+        return new self(gmp_init(0), $numberOfBits);
+    }
+
     function get(int $index): bool
     {
         if (0 > $index || $index > $this->numberOfBits)
@@ -71,7 +79,7 @@ class GmpBitArray extends BitArray
     {
         $this->n = $value
             ? self::buildOnes($this->numberOfBits)
-            : gmp_init('0');
+            : gmp_init(0);
         return $this;
     }
 
@@ -151,7 +159,6 @@ class GmpBitArray extends BitArray
         }
         parent::applyBitwiseXor($other);
     }
-
 
     function __serialize(): array
     {

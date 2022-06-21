@@ -16,7 +16,7 @@ class PhpBitArray extends BitArray
         $this->byteBuffer = $byteBuffer;
     }
 
-    static function fromRawString(string $rawString): PhpBitArray
+    static function fromRawString(string $rawString): self
     {
         // See: https://stackoverflow.com/a/11466734
         $byteBuffer = unpack('C*', $rawString); // Caution: returns 1-based indexes
@@ -29,13 +29,26 @@ class PhpBitArray extends BitArray
         return pack('C*', ...$this->byteBuffer);
     }
 
-    static function create(int $size): PhpBitArray
+    static function create(int $numberOfBits): self
     {
-        if ($size === 0 || ($size % 8) !== 0)
-            throw new InvalidArgumentException('$size must be a multiple of 8 and greater than 0');
+        if ($numberOfBits <= 0 || ($numberOfBits % 8) !== 0)
+            throw new InvalidArgumentException('$numberOfBits must be a multiple of 8 and greater than 0');
 
-        $byteBuffer = array_fill(0, $size, 0);
+        $byteBuffer = array_fill(0, $numberOfBits, 0);
         return new self($byteBuffer);
+    }
+
+    function get(int $index): bool
+    {
+        if (0 > $index || $index > $this->numberOfBits)
+            throw new OutOfBoundsException();
+
+        $indexOfByteInBuffer = intdiv($index, 8);
+        $indexOfBitInByte = 7 - ($index % 8); // "7 - " makes the MSB the bit with index 0 (instead of the LSB)
+
+        $byte = $this->byteBuffer[$indexOfByteInBuffer];
+
+        return ($byte & (1 << $indexOfBitInByte)) !== 0;
     }
 
     function set(int $index, bool $value): self
@@ -57,19 +70,6 @@ class PhpBitArray extends BitArray
         }
 
         return $this;
-    }
-
-    function get(int $index): bool
-    {
-        if (0 > $index || $index > $this->numberOfBits)
-            throw new OutOfBoundsException();
-
-        $indexOfByteInBuffer = intdiv($index, 8);
-        $indexOfBitInByte = 7 - ($index % 8); // "7 - " makes the MSB the bit with index 0 (instead of the LSB)
-
-        $byte = $this->byteBuffer[$indexOfByteInBuffer];
-
-        return ($byte & (1 << $indexOfBitInByte)) !== 0;
     }
 
     function at(int $index): bool
@@ -116,27 +116,6 @@ class PhpBitArray extends BitArray
         $bitCount = (($bitCount >> 8) + $bitCount) & 0x00FF00FF;
         return (($bitCount >> 16) + $bitCount) & 0x0000FFFF;
     }
-
-    /*
-    function iterate()
-    {
-        $byteCount = intdiv($this->size, 8);
-        $buffer = $this->byteBuffer;
-
-        for ($byteIndex = 0; $byteIndex < $byteCount; ++$byteIndex) {
-            $byte = $buffer[$byteIndex];
-
-            $byteIndexPreMultiplied = $byteIndex * 8;
-            for ($i = 0; $i < 8; ++$i) {
-                $value = ($byte & (1 << (7 - $i))) !== 0;
-                $index = $byteIndexPreMultiplied + $i;
-                if ($value)
-                    yield $index;
-                // yield [$index, $value];
-            }
-        }
-    }
-    */
 
     function collectIndicesWithValue(bool $needleValue): array
     {
