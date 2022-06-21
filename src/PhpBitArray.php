@@ -94,33 +94,12 @@ class PhpBitArray extends BitArray
 
     function popCount(bool $value = true): int
     {
-        // gmp_popcount is actually _way_ faster than this
-        // 10 rounds yield this:
-        //      gmp_popcount: 0.00126
-        //      this method: 3.559581
-        // (on a bit array of size 8000000)
-        // However, we may not have GMP available and the internal representation is incompatible with our BitArray
-        //(at the moment)
-
-        // packing the array and passing it to GMP is actually faster than the pure PHP implementation:
-        //                       gmp_popcount: 0.001204
-        // pack() gmp_import and gmp_popcount: 0.080502
-        // For popcount, the memory layout doesn't matter, so we can fall back to GMP if it is available
-
-        if (extension_loaded('gmp')) {
-            $packedBuffer = $this->toRawString();
-            $number = gmp_import($packedBuffer);
-            $ones = gmp_popcount($number);
-            return $value
-                ? $ones
-                : ($this->numberOfBits - $ones);
-        }
-
         // TODO: Maybe use optimized implementation from https://stackoverflow.com/a/109025
         // Always counts the true bits and depending on what was asked for, subtract it from the length
         $ones = 0;
         foreach ($this->byteBuffer as $byte) {
-            $ones += self::numberOfSetBits($byte & 0xff);
+            if ($byte !== 0)
+                $ones += self::numberOfSetBits($byte & 0xff);
         }
 
         return $value
@@ -159,7 +138,7 @@ class PhpBitArray extends BitArray
     }
     */
 
-    function getIndicesWithValue(bool $needleValue): array
+    function collectIndicesWithValue(bool $needleValue): array
     {
         $res = [];
 

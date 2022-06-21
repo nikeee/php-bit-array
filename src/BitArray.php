@@ -26,9 +26,18 @@ abstract class BitArray
 
     abstract function popCount(bool $value = true): int;
 
-    abstract function __serialize(): array;
+    function collectIndicesWithValue(bool $needleValue): array
+    {
+        $res = [];
 
-    abstract function __unserialize(array $data): void;
+        // Slow fallback implementation in case there is no faster, specific implementation
+        // (called by the child class if needed)
+        for ($i = 0; $i < $this->numberOfBits; ++$i) {
+            if ($this->get($i) === $needleValue)
+                $res[] = $i;
+        }
+        return $res;
+    }
 
     function applyBitwiseNot(): void
     {
@@ -81,6 +90,10 @@ abstract class BitArray
             $this->set($i, ($v0 ^ $v1) & 0xff);
         }
     }
+
+    abstract function __serialize(): array;
+
+    abstract function __unserialize(array $data): void;
 
     static function fromRawString(string $rawString): BitArray
     {

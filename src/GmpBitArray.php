@@ -83,6 +83,25 @@ class GmpBitArray extends BitArray
             : $this->numberOfBits - $ones;
     }
 
+    function collectIndicesWithValue(bool $needleValue): array
+    {
+        $n = $this->n;
+        $lastIndex = 0;
+        $indexes = [];
+        if ($needleValue) {
+            while (($lastIndex = gmp_scan1($n, $lastIndex)) !== -1) {
+                $indexes[] = $lastIndex;
+                ++$lastIndex;
+            }
+        } else {
+            while (($lastIndex = gmp_scan0($n, $lastIndex)) !== -1) {
+                $indexes[] = $lastIndex;
+                ++$lastIndex;
+            }
+        }
+        return $indexes;
+    }
+
     function applyBitwiseNot(): void
     {
         $ones = self::buildOnes($this->numberOfBits);
