@@ -36,7 +36,7 @@ jobs:
     - name: Generating documentation...
       uses: impresscms-dev/generate-phpdocs-with-clean-phpdoc-md-action@v0.1.4
       with:
-        class_root_namespace: src\
+        class_root_namespace: Nikeee\
         included_classes: Nikeee\**
         output_path: ./docs/
 
