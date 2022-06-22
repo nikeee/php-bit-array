@@ -162,6 +162,208 @@ final class BitArrayTest extends TestCase
         $this->expectException(OutOfBoundsException::class);
         $bitArrayClass::create(8)->get(16);
     }
+
+    /** @dataProvider provideTwoBitArrayImplementations */
+    function testApplyBitwiseAndWithUnequalSizes($firstClass, $secondClass)
+    {
+        $arr0 = $firstClass::create(8);
+        $arr1 = $secondClass::create(16);
+        $this->expectException(InvalidArgumentException::class);
+        $arr0->applyBitwiseAnd($arr1);
+    }
+
+    /** @dataProvider provideTwoBitArrayImplementationsWithSize */
+    function testApplyBitwiseAnd($firstClass, $secondClass, $arraySize)
+    {
+        $arr0 = $firstClass::create($arraySize);
+        $arr1 = $secondClass::create($arraySize);
+
+        $arr0->clear()->set(1, false);
+        $arr1->clear()->set(1, false);
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+        $arr0->applyBitwiseAnd($arr1);
+
+        $this->assertEquals(false, $arr0->get(1));
+        $this->assertEquals(false, $arr1->get(1));
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+
+        $arr0->clear()->set(1, true);
+        $arr1->clear()->set(1, false);
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+        $arr0->applyBitwiseAnd($arr1);
+
+        $this->assertEquals(false, $arr0->get(1));
+        $this->assertEquals(false, $arr1->get(1));
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+
+        $arr0->clear()->set(1, true);
+        $arr1->clear()->set(1, true);
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+
+        $arr0->applyBitwiseAnd($arr1);
+
+        $this->assertEquals(true, $arr0->get(1));
+        $this->assertEquals(true, $arr1->get(1));
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+
+
+        $arr0->clear()->set(1, false);
+        $arr1->clear()->set(1, true);
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+
+        $arr0->applyBitwiseAnd($arr1);
+
+        $this->assertEquals(false, $arr0->get(1));
+        $this->assertEquals(true, $arr1->get(1));
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+    }
+
+    /** @dataProvider provideTwoBitArrayImplementations */
+    function testApplyBitwiseOrWithUnequalSizes($firstClass, $secondClass)
+    {
+        $arr0 = $firstClass::create(8);
+        $arr1 = $secondClass::create(16);
+        $this->expectException(InvalidArgumentException::class);
+        $arr0->applyBitwiseOr($arr1);
+    }
+
+    /** @dataProvider provideTwoBitArrayImplementationsWithSize */
+    function testApplyBitwiseOr($firstClass, $secondClass, $arraySize)
+    {
+        $arr0 = $firstClass::create($arraySize);
+        $arr1 = $secondClass::create($arraySize);
+
+        $arr0->clear()->set(1, false);
+        $arr1->clear()->set(1, false);
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+        $arr0->applyBitwiseOr($arr1);
+
+        $this->assertEquals(false, $arr0->get(1));
+        $this->assertEquals(false, $arr1->get(1));
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+
+        $arr0->clear()->set(1, true);
+        $arr1->clear()->set(1, false);
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+        $arr0->applyBitwiseOr($arr1);
+
+        $this->assertEquals(true, $arr0->get(1));
+        $this->assertEquals(false, $arr1->get(1));
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+
+        $arr0->clear()->set(1, true);
+        $arr1->clear()->set(1, true);
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+
+        $arr0->applyBitwiseOr($arr1);
+
+        $this->assertEquals(true, $arr0->get(1));
+        $this->assertEquals(true, $arr1->get(1));
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+
+
+        $arr0->clear()->set(1, false);
+        $arr1->clear()->set(1, true);
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+
+        $arr0->applyBitwiseOr($arr1);
+
+        $this->assertEquals(true, $arr0->get(1));
+        $this->assertEquals(true, $arr1->get(1));
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+    }
+
+    /** @dataProvider provideTwoBitArrayImplementations */
+    function testApplyBitwiseXorWithUnequalSizes($firstClass, $secondClass)
+    {
+        $arr0 = $firstClass::create(8);
+        $arr1 = $secondClass::create(16);
+        $this->expectException(InvalidArgumentException::class);
+        $arr0->applyBitwiseXor($arr1);
+    }
+
+    /** @dataProvider provideTwoBitArrayImplementationsWithSize */
+    function testApplyBitwiseXor($firstClass, $secondClass, $arraySize)
+    {
+        $arr0 = $firstClass::create($arraySize);
+        $arr1 = $secondClass::create($arraySize);
+
+        $arr0->clear()->set(1, false);
+        $arr1->clear()->set(1, false);
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+        $arr0->applyBitwiseXor($arr1);
+
+        $this->assertEquals(false, $arr0->get(1));
+        $this->assertEquals(false, $arr1->get(1));
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+
+        $arr0->clear()->set(1, true);
+        $arr1->clear()->set(1, false);
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+        $arr0->applyBitwiseXor($arr1);
+
+        $this->assertEquals(true, $arr0->get(1));
+        $this->assertEquals(false, $arr1->get(1));
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(0, $arr1->popCount(true));
+
+
+        $arr0->clear()->set(1, true);
+        $arr1->clear()->set(1, true);
+        $this->assertEquals(1, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+
+        $arr0->applyBitwiseXor($arr1);
+
+        $this->assertEquals(false, $arr0->get(1));
+        $this->assertEquals(true, $arr1->get(1));
+        $this->assertEquals(0 /* ??? */, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+
+
+        $arr0->clear()->set(1, false);
+        $arr1->clear()->set(1, true);
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+
+        $arr0->applyBitwiseXor($arr1);
+
+        $this->assertEquals(true, $arr0->get(1));
+        $this->assertEquals(true, $arr1->get(1));
+        $this->assertEquals(1 /* ??? */, $arr0->popCount(true));
+        $this->assertEquals(1, $arr1->popCount(true));
+    }
+
     // #region Providers
 
     function provideBitArrayImplementation(): array
@@ -177,6 +379,15 @@ final class BitArrayTest extends TestCase
         return DataProviders::cross(
             $this->provideBitArrayImplementation(),
             $this->provideBitArrayImplementation(),
+        );
+    }
+
+    function provideTwoBitArrayImplementationsWithSize(): array
+    {
+        return DataProviders::cross(
+            $this->provideBitArrayImplementation(),
+            $this->provideBitArrayImplementation(),
+            $this->provideValidBitArraySizes(),
         );
     }
 
