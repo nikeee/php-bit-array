@@ -14,7 +14,7 @@ composer require nikeee/bit-array
 <?php
 require_once 'vendor/autoload.php';
 
-use Nikeee\BitArray;
+use Nikeee\BitArray\BitArray;
 
 $arr = BitArray::create(8);
 
