@@ -137,8 +137,9 @@ class PhpBitArray extends BitArray
      */
     function applyBitwiseNot(): void
     {
-        for ($i = 0; $i < $this->numberOfBits; ++$i)
-            $this->byteBuffer[$i] |= (~$this->byteBuffer[$i]) & 0xff;
+        $numberOfBytes = (int)($this->numberOfBits / 8);
+        for ($i = 0; $i < $numberOfBytes; ++$i)
+            $this->byteBuffer[$i] = (~$this->byteBuffer[$i]) & 0xff;
     }
 
     function applyBitwiseAnd(BitArray $other): void
