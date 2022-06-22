@@ -163,6 +163,99 @@ final class BitArrayTest extends TestCase
         $bitArrayClass::create(8)->get(16);
     }
 
+    /** @dataProvider provideBitArrayImplementation */
+    function testToRawString($bitArrayClass)
+    {
+        $arr = $bitArrayClass::create(8)
+            ->set(0, true)
+            ->set(1, true)
+            ->set(5, true)
+            ->set(7, true);
+
+        echo bin2hex($arr->toRawString()) . "\n";
+
+        $this->assertEquals(1, strlen($arr->toRawString()));
+        $this->assertEquals("\xC5", $arr->toRawString());
+
+        $arr = $bitArrayClass::create(16)
+            ->set(0, true)
+            ->set(1, true)
+            ->set(5, true)
+            ->set(7, true);
+
+        $this->assertEquals(2, strlen($arr->toRawString()));
+        $this->assertEquals("\xC5\x00", $arr->toRawString());
+
+        $arr->set(15, true);
+        $this->assertEquals(2, strlen($arr->toRawString()));
+        $this->assertEquals("\xC5\x01", $arr->toRawString());
+    }
+
+    /** @dataProvider provideTwoBitArrayImplementationsWithSize */
+    function testFromRawStringConsistency($firstClass, $secondClass, $arraySize)
+    {
+        $arr0 = $firstClass::create($arraySize)
+            ->set(0, true)
+            ->set(1, true)
+            ->set(5, true)
+            ->set(7, true);
+
+        $arr1 = $secondClass::fromRawString($arr0->toRawString());
+
+        $this->assertEquals($arraySize, $arr0->getNumberOfBits());
+        $this->assertEquals($arraySize, $arr1->getNumberOfBits());
+        $this->assertEquals($arr0->getNumberOfBits(), $arr1->getNumberOfBits());
+
+        $this->assertCount(4, $arr0->collectIndicesWithValue(true));
+        $this->assertCount(4, $arr1->collectIndicesWithValue(true));
+        $this->assertCount($arraySize - 4, $arr0->collectIndicesWithValue(false));
+        $this->assertCount($arraySize - 4, $arr1->collectIndicesWithValue(false));
+
+        $this->assertSame(
+            $arr0->collectIndicesWithValue(false),
+            $arr1->collectIndicesWithValue(false),
+        );
+
+        $this->assertSame(
+            $arr0->collectIndicesWithValue(true),
+            $arr1->collectIndicesWithValue(true),
+        );
+    }
+
+    /** @dataProvider provideBitArrayWithValidBitArraySizes */
+    function testApplyBitwiseNot($bitArrayClass, $arraySize)
+    {
+        $arr0 = $bitArrayClass::create($arraySize);
+        $arr0->applyBitwiseNot();
+        $this->assertEquals($arr0->getNumberOfBits(), $arr0->popCount(true));
+        $this->assertEquals(0, $arr0->popCount(false));
+
+        $arr0->applyBitwiseNot();
+        $this->assertEquals(0, $arr0->popCount(true));
+        $this->assertEquals($arr0->getNumberOfBits(), $arr0->popCount(false));
+
+        $arr0 = $bitArrayClass::create($arraySize)
+            ->set(0, true)
+            ->set(1, true)
+            ->set(5, true)
+            ->set(7, true);
+
+        $this->assertEquals(4, $arr0->popCount(true));
+        $this->assertEquals(true, $arr0->get(0));
+        $this->assertEquals(true, $arr0->get(1));
+        $this->assertEquals(true, $arr0->get(5));
+        $this->assertEquals(true, $arr0->get(7));
+        $this->assertEquals(false, $arr0->get(2));
+
+        $arr0->applyBitwiseNot();
+        $this->assertEquals(4, $arr0->popCount(false));
+        $this->assertEquals(false, $arr0->get(0));
+        $this->assertEquals(false, $arr0->get(1));
+        $this->assertEquals(false, $arr0->get(5));
+        $this->assertEquals(false, $arr0->get(7));
+        $this->assertEquals(true, $arr0->get(2));
+    }
+
     /** @dataProvider provideTwoBitArrayImplementations */
     function testApplyBitwiseAndWithUnequalSizes($firstClass, $secondClass)
     {
