@@ -7,8 +7,18 @@ use OutOfBoundsException;
 
 class PhpBitArray extends BitArray
 {
+    /**
+     * The buffer is filled with 1s and 0s
+     * For example, index 0 will be mapped to the left-most bit (MSB) of the first byte:
+     *     0b10000000
+     * Index 1 will be mapped to:
+     *     0b01000000
+     * So when having 16 slots and setting bit 0 and 9, the buffer would look like this:
+     *     [0b10000000, 0b01000000]
+     */
     private array $byteBuffer;
 
+    /** Creates a {@link PhpBitArray} with a backing buffer. */
     private function __construct(array $byteBuffer)
     {
         $numberOfBits = count($byteBuffer) * 8;
@@ -38,6 +48,14 @@ class PhpBitArray extends BitArray
         return new self($byteBuffer);
     }
 
+    /**
+     * Gets a value of the array.
+     *
+     * Time complexity: O(1)
+     *
+     * @param $index int An integer `n` that is `0 <= n < this.length`.
+     * @returns bool value that indicates whether the bit was set.
+     */
     function get(int $index): bool
     {
         if ($index < 0 || $this->numberOfBits <= $index)
@@ -51,6 +69,14 @@ class PhpBitArray extends BitArray
         return ($byte & (1 << $indexOfBitInByte)) !== 0;
     }
 
+    /**
+     * Sets a value of the array.
+     * @param $index int An integer `n` that is `0 <= n < this.length`.
+     * @param $value bool The value to safe. Can be `true | false | 0 | 1`.
+     * @returns self Reference to the same {@link BitArray}, so multiple calls can be chained.
+     *
+     * Time complexity: O(1)
+     */
     function set(int $index, bool $value): self
     {
         if ($index < 0 || $this->numberOfBits <= $index)
@@ -72,11 +98,22 @@ class PhpBitArray extends BitArray
         return $this;
     }
 
+    /**
+     * Sets all `{@link bool}`s in the array to `false`. Keeps the array length.
+     *
+     * Time complexity: O(n) with n being the size of the array
+     *
+     * @returns self Reference to the same {@link BitArray}, so multiple calls can be chained.
+     */
     function clear(): self
     {
         return $this->fill(false);
     }
 
+    /**
+     * Sets all `{@link bool}`s in the array to `value`. Keeps the array length.
+     * @returns self Reference to the same {@link BitArray}, so multiple calls can be chained.
+     */
     function fill(bool $value): self
     {
         $v = $value ? 255 : 0;
@@ -84,6 +121,12 @@ class PhpBitArray extends BitArray
         return $this;
     }
 
+    /**
+     * Counts the number of bits set to a specific {@link $needleValue}.
+     *
+     * Time complexity: O(n) with n being the size of the array
+     * @returns int The number of bits set to a specific {@link $value}.
+     */
     function popCount(bool $value = true): int
     {
         // TODO: Maybe use optimized implementation from https://stackoverflow.com/a/109025
@@ -131,9 +174,9 @@ class PhpBitArray extends BitArray
     }
 
     /**
-     * Returns the bitwise negation of the array.
+     * Performs a bitwise NOT (`!`) on every bit of the array. Mutates the array.
      *
-     * Time complexity: O(n) with n being the size of the array
+     * Time complexity: O(n) with n being the size of the arrays
      */
     function applyBitwiseNot(): void
     {
@@ -143,6 +186,14 @@ class PhpBitArray extends BitArray
             $this->byteBuffer[$i] = (~$this->byteBuffer[$i]) & 0xff;
     }
 
+    /**
+     * Performs a bitwise AND (`&`) of two arrays. Mutates the array.
+     * Performs faster if {@link $other} is of the same type as {@link $this}.
+     *
+     * Time complexity: O(n) with n being the size of the arrays
+     *
+     * @param $other self The other {@link BitArray}
+     */
     function applyBitwiseAnd(BitArray $other): void
     {
         if ($this->numberOfBits !== $other->numberOfBits)
@@ -159,6 +210,14 @@ class PhpBitArray extends BitArray
         parent::applyBitwiseAnd($other);
     }
 
+    /**
+     * Performs a bitwise OR (`|`) of two arrays. Mutates the array.
+     * Performs faster if {@link $other} is of the same type as {@link $this}.
+     *
+     * Time complexity: O(n) with n being the size of the arrays
+     *
+     * @param $other self The other {@link BitArray}
+     */
     function applyBitwiseOr(BitArray $other): void
     {
         if ($this->numberOfBits !== $other->numberOfBits)
@@ -176,6 +235,14 @@ class PhpBitArray extends BitArray
         parent::applyBitwiseOr($other);
     }
 
+    /**
+     * Performs a bitwise XOR (`^`) of two arrays. Mutates the array.
+     * Performs faster if {@link $other} is of the same type as {@link $this}.
+     *
+     * Time complexity: O(n) with n being the size of the arrays
+     *
+     * @param $other self The other {@link BitArray}
+     */
     function applyBitwiseXor(BitArray $other): void
     {
         if ($this->numberOfBits !== $other->numberOfBits)
@@ -195,6 +262,14 @@ class PhpBitArray extends BitArray
         parent::applyBitwiseXor($other);
     }
 
+    /**
+     * Returns rhe string representation of the bit array. Consists of 1's and 0's.
+     * Its length is equal to the return value of {@link BitArray::getNumberOfBits()}.
+     *
+     * Time complexity: O(n) with n being the size of the arrays
+     *
+     * @return string The string representation of the bit array.
+     */
     function toBitString(): string
     {
         $result = '';
