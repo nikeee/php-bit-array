@@ -151,6 +151,16 @@ class PhpBitArray extends BitArray
             : ($this->numberOfBits - $ones);
     }
 
+    /**
+     * Collects the indexes that have a specific bit set (or not set).
+     *
+     * Remarks: `count(collectIndicesWithValue(true))` is equivalent to, but slower as `popCount(true)`.
+     *
+     * Time complexity: O(n) with n being the size of the array
+     *
+     * @param bool $needleValue Value to look out for. `true` for bits set to 1. `false` for bits set to 0.
+     * @return array The indexes which have this value.
+     */
     function collectIndicesWithValue(bool $needleValue): array
     {
         $res = [];
