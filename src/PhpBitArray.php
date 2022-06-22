@@ -195,6 +195,14 @@ class PhpBitArray extends BitArray
         parent::applyBitwiseXor($other);
     }
 
+    function toBitString(): string
+    {
+        $result = '';
+        foreach ($this->byteBuffer as $byte)
+            $result .= str_pad(decbin($byte), 8, '0', STR_PAD_LEFT);
+        return $result;
+    }
+
     function __serialize(): array
     {
         return [$this->toRawString()];

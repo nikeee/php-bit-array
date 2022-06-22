@@ -106,6 +106,17 @@ abstract class BitArray
         }
     }
 
+    function toBitString(): string
+    {
+        // Slow fallback implementation in case the user passed an array which is not the same type
+        // (called by the child class if needed)
+        $result = '';
+        for ($i = 0; $i < $this->numberOfBits; ++$i) {
+            $result .= $this->get($i) ? '1' : '0';
+        }
+        return $result;
+    }
+
     abstract function __serialize(): array;
 
     abstract function __unserialize(array $data): void;
