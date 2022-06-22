@@ -364,14 +364,71 @@ final class BitArrayTest extends TestCase
         $this->assertEquals(1, $arr1->popCount(true));
     }
 
+    /** @dataProvider provideBitArrayImplementation */
+    function testToBitString($bitArrayClass)
+    {
+        $a = $bitArrayClass::create(8);
+        $this->assertEquals('00000000', $a->toBitString());
+
+        $a->set(0, true);
+        $this->assertEquals('10000000', $a->toBitString());
+
+        $a->set(1, true);
+        $this->assertEquals('11000000', $a->toBitString());
+
+        $a->set(7, true);
+        $this->assertEquals('11000001', $a->toBitString());
+
+
+        $a = $bitArrayClass::create(16);
+        $this->assertEquals('0000000000000000', $a->toBitString());
+
+        $a->set(0, true);
+        $this->assertEquals('1000000000000000', $a->toBitString());
+
+        $a->set(1, true);
+        $this->assertEquals('1100000000000000', $a->toBitString());
+
+        $a->set(7, true);
+        $this->assertEquals('1100000100000000', $a->toBitString());
+
+        $a->set(14, true);
+        $this->assertEquals('1100000100000010', $a->toBitString());
+
+
+        $a = $bitArrayClass::create(24);
+        $this->assertEquals('000000000000000000000000', $a->toBitString());
+
+        $a->set(0, true);
+        $this->assertEquals('100000000000000000000000', $a->toBitString());
+
+        $a->set(1, true);
+        $this->assertEquals('110000000000000000000000', $a->toBitString());
+
+        $a->set(7, true);
+        $this->assertEquals('110000010000000000000000', $a->toBitString());
+
+        $a->set(14, true);
+        $this->assertEquals('110000010000001000000000', $a->toBitString());
+
+        $a->set(22, true);
+        $this->assertEquals('110000010000001000000010', $a->toBitString());
+
+        $a->set(23, true);
+        $this->assertEquals('110000010000001000000011', $a->toBitString());
+
+        $a->set(0, false);
+        $this->assertEquals('010000010000001000000011', $a->toBitString());
+    }
+
     // #region Providers
 
     function provideBitArrayImplementation(): array
     {
         return [
             [BitArray::class],
-            [GmpBitArray::class],
             [PhpBitArray::class],
+            // [GmpBitArray::class],
         ];
     }
 

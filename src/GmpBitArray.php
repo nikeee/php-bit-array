@@ -7,6 +7,10 @@ use GMP;
 use InvalidArgumentException;
 use OutOfBoundsException;
 
+/**
+ * This class is not stable. Do not use.
+ * @deprecated Use PhpBitArray instead.
+ */
 class GmpBitArray extends BitArray
 {
     private GMP $n;
@@ -33,7 +37,7 @@ class GmpBitArray extends BitArray
     function toRawString(): string
     {
         // TODO: This is buggy. It appends a 0 at the end
-        return gmp_export($this->n, 1, GMP_MSW_FIRST | GMP_LITTLE_ENDIAN);
+        return gmp_export($this->n, 1, GMP_LSW_FIRST);
     }
 
     static function create(int $numberOfBits): self
@@ -107,7 +111,13 @@ class GmpBitArray extends BitArray
     function applyBitwiseNot(): void
     {
         $ones = self::buildOnes($this->numberOfBits);
+        echo "\n";
+        echo gmp_strval($ones, 2) . "\n";
+        echo gmp_strval($this->n, 2) . "\n";
+        echo "---\n";
         $this->n = gmp_xor($this->n, $ones);
+        echo gmp_strval($this->n, 2) . "\n";
+        echo "\n";
     }
 
     private static function buildOnes(int $numberOfBits): GMP
@@ -115,7 +125,9 @@ class GmpBitArray extends BitArray
         // We're ensured that $numberOfBits is always divisible by 8
         // We can construct a new GMP number that parses (n/8) * '0xFF'
         $binaryString = str_repeat("\xff", (int)($numberOfBits / 8));
-        return gmp_import($binaryString);
+        return gmp_import($binaryString, 1, GMP_MSW_FIRST);
+        // $binaryString = str_repeat("FF", (int)($numberOfBits / 8));
+        // return gmp_init($binaryString, 16);
     }
 
     function applyBitwiseAnd(BitArray $other): void
@@ -152,6 +164,12 @@ class GmpBitArray extends BitArray
             return;
         }
         parent::applyBitwiseXor($other);
+    }
+
+    function toBitString(): string
+    {
+        $unpaddedNumber = gmp_strval($this->n, 2);
+        return str_pad($unpaddedNumber, $this->numberOfBits, '0', STR_PAD_RIGHT);
     }
 
     function __serialize(): array
