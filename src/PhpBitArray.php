@@ -153,7 +153,9 @@ class PhpBitArray extends BitArray
 
             for ($i = 0; $i < $numberOfBytes; ++$i)
                 $this->byteBuffer[$i] &= $other->byteBuffer[$i];
+            return;
         }
+
         parent::applyBitwiseAnd($other);
     }
 
@@ -168,7 +170,9 @@ class PhpBitArray extends BitArray
 
             for ($i = 0; $i < $numberOfBytes; ++$i)
                 $this->byteBuffer[$i] |= $other->byteBuffer[$i];
+            return;
         }
+
         parent::applyBitwiseOr($other);
     }
 
@@ -181,9 +185,13 @@ class PhpBitArray extends BitArray
 
             $numberOfBytes = (int)($this->numberOfBits / 8);
 
-            for ($i = 0; $i < $numberOfBytes; ++$i)
-                $this->byteBuffer[$i] ^= $other->byteBuffer[$i];
+            for ($i = 0; $i < $numberOfBytes; ++$i) {
+                $v = $this->byteBuffer[$i];
+                $this->byteBuffer[$i] = ($v ^ $other->byteBuffer[$i]) & 0xff;
+            }
+            return;
         }
+
         parent::applyBitwiseXor($other);
     }
 
