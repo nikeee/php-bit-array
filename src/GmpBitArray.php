@@ -175,6 +175,14 @@ class GmpBitArray extends BitArray
         throw new Exception('Not implemented');
     }
 
+    /**
+     * @throws Exception Not implemented
+     */
+    function cloneAndEnlarge(int $desiredTotalNumberOfBits): GmpBitArray
+    {
+        throw new Exception('Not implemented');
+    }
+
     function toBitString(): string
     {
         $unpaddedNumber = gmp_strval($this->n, 2);

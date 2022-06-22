@@ -276,6 +276,30 @@ class PhpBitArray extends BitArray
     }
 
     /**
+     * Clones the array into a new one, copying elements to a larger array. Modifications made on the clone won't be reflected in the source array.
+     * @param int $desiredTotalNumberOfBits Total number of bits the copy will have. Must be a multiple of 8, greater than 0 and greater or equal to the number of bits in the original array.
+     * @return PhpBitArray
+     */
+    function cloneAndEnlarge(int $desiredTotalNumberOfBits): PhpBitArray
+    {
+        if ($desiredTotalNumberOfBits <= 0 || ($desiredTotalNumberOfBits % 8) !== 0)
+            throw new InvalidArgumentException('$desiredTotalNumberOfBits must be a multiple of 8 and greater than 0');
+
+        if ($desiredTotalNumberOfBits < $this->numberOfBits)
+            throw new InvalidArgumentException('$desiredTotalNumberOfBits must be grater or equal to the number of bits in the source array');
+
+        if ($desiredTotalNumberOfBits === $this->numberOfBits)
+            return $this->clone();
+
+        $newBuffer = array_pad(
+            $this->byteBuffer,
+            intdiv($desiredTotalNumberOfBits, 8),
+            0
+        );
+        return new PhpBitArray($newBuffer);
+    }
+
+    /**
      * Returns rhe string representation of the bit array. Consists of 1's and 0's.
      * Its length is equal to the return value of {@link BitArray::getNumberOfBits()}.
      *

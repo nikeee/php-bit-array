@@ -541,6 +541,38 @@ final class BitArrayTest extends TestCase
         $this->assertEquals(false, $arr1->get(6));
     }
 
+    /** @dataProvider provideBitArrayWithValidBitArraySizes */
+    function testCloneAndEnlarge($bitArrayClass, $arraySize)
+    {
+        $arr0 = $bitArrayClass::create($arraySize)
+            ->set(0, true)
+            ->set(1, true)
+            ->set(7, true);
+
+        $arr1 = $arr0->cloneAndEnlarge($arraySize + 8);
+
+        $this->assertEquals($arraySize, $arr0->getNumberOfBits());
+        $this->assertEquals($arraySize + 8, $arr1->getNumberOfBits());
+        $this->assertEquals(3, $arr0->popCount(true));
+        $this->assertEquals(3, $arr1->popCount(true));
+
+        $arr0->set(5, true);
+        $this->assertEquals(true, $arr0->get(5));
+        $this->assertEquals(false, $arr1->get(5));
+
+        $arr1->set(6, true);
+        $this->assertEquals(true, $arr0->get(5));
+        $this->assertEquals(false, $arr1->get(5));
+        $this->assertEquals(false, $arr0->get(6));
+        $this->assertEquals(true, $arr1->get(6));
+
+        $arr1->set(6, false);
+        $this->assertEquals(true, $arr0->get(5));
+        $this->assertEquals(false, $arr1->get(5));
+        $this->assertEquals(false, $arr0->get(6));
+        $this->assertEquals(false, $arr1->get(6));
+    }
+
     // #region Providers
 
     function provideBitArrayImplementation(): array

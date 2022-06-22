@@ -190,6 +190,13 @@ abstract class BitArray
     abstract function clone(): BitArray;
 
     /**
+     * Clones the array into a new one, copying elements to a larger array. Modifications made on the clone won't be reflected in the source array.
+     * @param int $desiredTotalNumberOfBits Total number of bits the copy will have. Must be a multiple of 8 and greater than 0.
+     * @return PhpBitArray
+     */
+    abstract function cloneAndEnlarge(int $desiredTotalNumberOfBits): BitArray;
+
+    /**
      * Returns rhe string representation of the bit array. Consists of 1's and 0's.
      * Its length is equal to the return value of {@link BitArray::getNumberOfBits()}.
      *
