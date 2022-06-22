@@ -128,6 +128,40 @@ final class BitArrayTest extends TestCase
         $arr->at(-10);
     }
 
+    /** @dataProvider provideBitArrayImplementation */
+    function testSetOutOfBounds0($bitArrayClass)
+    {
+        $this->expectException(OutOfBoundsException::class);
+        $bitArrayClass::create(8)->set(8, true);
+    }
+
+    /** @dataProvider provideBitArrayImplementation */
+    function testSetOutOfBounds1($bitArrayClass)
+    {
+        $this->expectException(OutOfBoundsException::class);
+        $bitArrayClass::create(8)->set(-1, true);
+    }
+
+    /** @dataProvider provideBitArrayImplementation */
+    function testGetOutOfBounds0($bitArrayClass)
+    {
+        $this->expectException(OutOfBoundsException::class);
+        $bitArrayClass::create(8)->get(8);
+    }
+
+    /** @dataProvider provideBitArrayImplementation */
+    function testGetOutOfBounds1($bitArrayClass)
+    {
+        $this->expectException(OutOfBoundsException::class);
+        $bitArrayClass::create(8)->get(-1);
+    }
+
+    /** @dataProvider provideBitArrayImplementation */
+    function testGetOutOfBounds2($bitArrayClass)
+    {
+        $this->expectException(OutOfBoundsException::class);
+        $bitArrayClass::create(8)->get(16);
+    }
     // #region Providers
 
     function provideBitArrayImplementation(): array
@@ -137,6 +171,13 @@ final class BitArrayTest extends TestCase
             [GmpBitArray::class],
             [PhpBitArray::class],
         ];
+    }
+
+    function provideTwoBitArrayImplementations(): array {
+        return DataProviders::cross(
+            $this->provideBitArrayImplementation(),
+            $this->provideBitArrayImplementation(),
+        );
     }
 
     function provideInvalidBitArraySizes(): array
