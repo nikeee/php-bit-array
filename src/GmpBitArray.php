@@ -32,7 +32,8 @@ class GmpBitArray extends BitArray
 
     function toRawString(): string
     {
-        return gmp_export($this->n);
+        // TODO: This is buggy. It appends a 0 at the end
+        return gmp_export($this->n, 1, GMP_MSW_FIRST | GMP_LITTLE_ENDIAN);
     }
 
     static function create(int $numberOfBits): self
@@ -45,7 +46,7 @@ class GmpBitArray extends BitArray
 
     function get(int $index): bool
     {
-        if (0 > $index || $index > $this->numberOfBits)
+        if ($index < 0 || $this->numberOfBits <= $index)
             throw new OutOfBoundsException();
 
         // Use `$this->numberOfBits - $index` as index because GMP layouts the data in reversed order
@@ -54,7 +55,7 @@ class GmpBitArray extends BitArray
 
     function set(int $index, bool $value): self
     {
-        if (0 > $index || $index > $this->numberOfBits)
+        if ($index < 0 || $this->numberOfBits <= $index)
             throw new OutOfBoundsException();
 
         // Use `$this->numberOfBits - $index` as index because GMP layouts the data in reversed order
@@ -85,16 +86,17 @@ class GmpBitArray extends BitArray
 
     function collectIndicesWithValue(bool $needleValue): array
     {
+        $numberOfBits = $this->numberOfBits;
         $n = $this->n;
         $lastIndex = 0;
         $indexes = [];
         if ($needleValue) {
-            while (($lastIndex = gmp_scan1($n, $lastIndex)) !== -1) {
+            while ($lastIndex < $numberOfBits && ($lastIndex = gmp_scan1($n, $lastIndex)) !== -1) {
                 $indexes[] = $lastIndex;
                 ++$lastIndex;
             }
         } else {
-            while (($lastIndex = gmp_scan0($n, $lastIndex)) !== -1) {
+            while ($lastIndex < $numberOfBits && ($lastIndex = gmp_scan0($n, $lastIndex)) !== -1) {
                 $indexes[] = $lastIndex;
                 ++$lastIndex;
             }

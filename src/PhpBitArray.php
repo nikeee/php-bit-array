@@ -40,7 +40,7 @@ class PhpBitArray extends BitArray
 
     function get(int $index): bool
     {
-        if (0 > $index || $index > $this->numberOfBits)
+        if ($index < 0 || $this->numberOfBits <= $index)
             throw new OutOfBoundsException();
 
         $indexOfByteInBuffer = intdiv($index, 8);
@@ -53,7 +53,7 @@ class PhpBitArray extends BitArray
 
     function set(int $index, bool $value): self
     {
-        if (0 > $index || $index > $this->numberOfBits)
+        if ($index < 0 || $this->numberOfBits <= $index)
             throw new OutOfBoundsException();
 
         $bitValue = (int)$value;
