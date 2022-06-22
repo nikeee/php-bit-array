@@ -138,6 +138,7 @@ class PhpBitArray extends BitArray
     function applyBitwiseNot(): void
     {
         $numberOfBytes = (int)($this->numberOfBits / 8);
+
         for ($i = 0; $i < $numberOfBytes; ++$i)
             $this->byteBuffer[$i] = (~$this->byteBuffer[$i]) & 0xff;
     }
@@ -148,7 +149,9 @@ class PhpBitArray extends BitArray
             throw new InvalidArgumentException('Both BitArrays must have the same length');
 
         if ($other instanceof PhpBitArray) {
-            for ($i = 0; $i < $this->numberOfBits; ++$i)
+            $numberOfBytes = (int)($this->numberOfBits / 8);
+
+            for ($i = 0; $i < $numberOfBytes; ++$i)
                 $this->byteBuffer[$i] &= $other->byteBuffer[$i];
         }
         parent::applyBitwiseAnd($other);
@@ -160,7 +163,10 @@ class PhpBitArray extends BitArray
             throw new InvalidArgumentException('Both BitArrays must have the same length');
 
         if ($other instanceof PhpBitArray) {
-            for ($i = 0; $i < $this->numberOfBits; ++$i)
+
+            $numberOfBytes = (int)($this->numberOfBits / 8);
+
+            for ($i = 0; $i < $numberOfBytes; ++$i)
                 $this->byteBuffer[$i] |= $other->byteBuffer[$i];
         }
         parent::applyBitwiseOr($other);
@@ -172,7 +178,10 @@ class PhpBitArray extends BitArray
             throw new InvalidArgumentException('Both BitArrays must have the same length');
 
         if ($other instanceof PhpBitArray) {
-            for ($i = 0; $i < $this->numberOfBits; ++$i)
+
+            $numberOfBytes = (int)($this->numberOfBits / 8);
+
+            for ($i = 0; $i < $numberOfBytes; ++$i)
                 $this->byteBuffer[$i] ^= $other->byteBuffer[$i];
         }
         parent::applyBitwiseXor($other);
