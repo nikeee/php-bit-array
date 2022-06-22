@@ -1,7 +1,7 @@
-name: CI
+name: CD
 
 on:
-  pull_request:
+  push:
     branches:
     - master
 
@@ -32,3 +32,17 @@ jobs:
 
     - name: Run test suite
       run: composer run-script test
+
+    - name: Generating documentation...
+      uses: impresscms-dev/generate-phpdocs-with-clean-phpdoc-md-action@v0.1.4
+      with:
+        class_root_namespace: src\
+        included_classes: "*"
+        output_path: ./docs/
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@v4.2.3
+      with:
+        branch: gh-pages
+        folder: docs
+        single-commit: true
