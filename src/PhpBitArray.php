@@ -18,6 +18,16 @@ class PhpBitArray extends BitArray
      */
     private array $byteBuffer;
 
+    /** @var int[] Used in {@link self::popCount} */
+    private const bytePopCountLookupTable = [
+        0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3,
+        3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4,
+        3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4,
+        4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 2, 3, 3, 4, 3, 4, 4, 5,
+        3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6,
+        6, 7, 6, 7, 7, 8,
+    ];
+
     /** Creates a {@link PhpBitArray} with a backing buffer. */
     private function __construct(array $byteBuffer)
     {
@@ -133,23 +143,12 @@ class PhpBitArray extends BitArray
         // Always counts the true bits and depending on what was asked for, subtract it from the length
         $ones = 0;
         foreach ($this->byteBuffer as $byte) {
-            if ($byte !== 0)
-                $ones += self::numberOfSetBits($byte & 0xff);
+            $ones += self::bytePopCountLookupTable[$byte & 0xff];
         }
 
         return $value
             ? $ones
             : ($this->numberOfBits - $ones);
-    }
-
-    private static function numberOfSetBits(int $v): int
-    {
-        // See: https://stackoverflow.com/a/38391968
-        $bitCount = $v - (($v >> 1) & 0x55555555);
-        $bitCount = (($bitCount >> 2) & 0x33333333) + ($bitCount & 0x33333333);
-        $bitCount = (($bitCount >> 4) + $bitCount) & 0x0F0F0F0F;
-        $bitCount = (($bitCount >> 8) + $bitCount) & 0x00FF00FF;
-        return (($bitCount >> 16) + $bitCount) & 0x0000FFFF;
     }
 
     function collectIndicesWithValue(bool $needleValue): array
