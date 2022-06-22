@@ -48,15 +48,6 @@ class GmpBitArray extends BitArray
         return new self(gmp_init(0), $numberOfBits);
     }
 
-    function get(int $index): bool
-    {
-        if ($index < 0 || $this->numberOfBits <= $index)
-            throw new OutOfBoundsException();
-
-        // Use `$this->numberOfBits - $index` as index because GMP layouts the data in reversed order
-        return gmp_testbit($this->n, $this->numberOfBits - $index);
-    }
-
     function set(int $index, bool $value): self
     {
         if ($index < 0 || $this->numberOfBits <= $index)
@@ -65,6 +56,15 @@ class GmpBitArray extends BitArray
         // Use `$this->numberOfBits - $index` as index because GMP layouts the data in reversed order
         gmp_setbit($this->n, $this->numberOfBits - $index, $value);
         return $this;
+    }
+
+    function get(int $index): bool
+    {
+        if ($index < 0 || $this->numberOfBits <= $index)
+            throw new OutOfBoundsException();
+
+        // Use `$this->numberOfBits - $index` as index because GMP layouts the data in reversed order
+        return gmp_testbit($this->n, $this->numberOfBits - $index);
     }
 
     function clear(): self

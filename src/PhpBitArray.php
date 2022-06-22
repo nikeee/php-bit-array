@@ -49,27 +49,6 @@ class PhpBitArray extends BitArray
     }
 
     /**
-     * Gets a value of the array.
-     *
-     * Time complexity: O(1)
-     *
-     * @param $index int An integer `n` that is `0 <= n < this.length`.
-     * @returns bool value that indicates whether the bit was set.
-     */
-    function get(int $index): bool
-    {
-        if ($index < 0 || $this->numberOfBits <= $index)
-            throw new OutOfBoundsException();
-
-        $indexOfByteInBuffer = intdiv($index, 8);
-        $indexOfBitInByte = 7 - ($index % 8); // "7 - " makes the MSB the bit with index 0 (instead of the LSB)
-
-        $byte = $this->byteBuffer[$indexOfByteInBuffer];
-
-        return ($byte & (1 << $indexOfBitInByte)) !== 0;
-    }
-
-    /**
      * Sets a value of the array.
      * @param $index int An integer `n` that is `0 <= n < this.length`.
      * @param $value bool The value to safe. Can be `true | false | 0 | 1`.
@@ -96,6 +75,27 @@ class PhpBitArray extends BitArray
         }
 
         return $this;
+    }
+
+    /**
+     * Gets a value of the array.
+     *
+     * Time complexity: O(1)
+     *
+     * @param $index int An integer `n` that is `0 <= n < this.length`.
+     * @returns bool value that indicates whether the bit was set.
+     */
+    function get(int $index): bool
+    {
+        if ($index < 0 || $this->numberOfBits <= $index)
+            throw new OutOfBoundsException();
+
+        $indexOfByteInBuffer = intdiv($index, 8);
+        $indexOfBitInByte = 7 - ($index % 8); // "7 - " makes the MSB the bit with index 0 (instead of the LSB)
+
+        $byte = $this->byteBuffer[$indexOfByteInBuffer];
+
+        return ($byte & (1 << $indexOfBitInByte)) !== 0;
     }
 
     /**

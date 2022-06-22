@@ -32,16 +32,6 @@ abstract class BitArray
     abstract function toRawString(): string;
 
     /**
-     * Gets a value of the array.
-     *
-     * Time complexity: O(1)
-     *
-     * @param $index int An integer `n` that is `0 <= n < this.length`.
-     * @returns bool value that indicates whether the bit was set.
-     */
-    abstract function get(int $index): bool;
-
-    /**
      * Sets a value of the array.
      * @param $index int An integer `n` that is `0 <= n < this.length`.
      * @param $value bool The value to safe. Can be `true | false | 0 | 1`.
@@ -50,6 +40,16 @@ abstract class BitArray
      * Time complexity: O(1)
      */
     abstract function set(int $index, bool $value): self;
+
+    /**
+     * Gets a value of the array.
+     *
+     * Time complexity: O(1)
+     *
+     * @param $index int An integer `n` that is `0 <= n < this.length`.
+     * @returns bool value that indicates whether the bit was set.
+     */
+    abstract function get(int $index): bool;
 
     /**
      * Like {@link BitArray::get}, but can handle negative indices like `Array.at` in JavaScript.
