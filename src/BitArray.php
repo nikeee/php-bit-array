@@ -181,6 +181,12 @@ abstract class BitArray
         }
     }
 
+    /**
+     * Clones the array into a new one. Modifications made on the clone won't be reflected in the source array.
+     *
+     * Time complexity: O(n) with n being the size of the arrays.
+     * @return BitArray
+     */
     abstract function clone(): BitArray;
 
     /**
