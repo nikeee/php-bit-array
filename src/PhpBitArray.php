@@ -261,6 +261,12 @@ class PhpBitArray extends BitArray
         parent::applyBitwiseXor($other);
     }
 
+    function clone(): PhpBitArray
+    {
+        // Passing the buffer will copy it (PHP internally uses COW semantics)
+        return new PhpBitArray($this->byteBuffer);
+    }
+
     /**
      * Returns rhe string representation of the bit array. Consists of 1's and 0's.
      * Its length is equal to the return value of {@link BitArray::getNumberOfBits()}.

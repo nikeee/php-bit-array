@@ -3,6 +3,7 @@
 
 namespace Nikeee\BitArray;
 
+use Exception;
 use GMP;
 use InvalidArgumentException;
 use OutOfBoundsException;
@@ -164,6 +165,14 @@ class GmpBitArray extends BitArray
             return;
         }
         parent::applyBitwiseXor($other);
+    }
+
+    /**
+     * @throws Exception Not implemented
+     */
+    function clone(): GmpBitArray
+    {
+        throw new Exception('Not implemented');
     }
 
     function toBitString(): string

@@ -181,6 +181,8 @@ abstract class BitArray
         }
     }
 
+    abstract function clone(): BitArray;
+
     /**
      * Returns rhe string representation of the bit array. Consists of 1's and 0's.
      * Its length is equal to the return value of {@link BitArray::getNumberOfBits()}.
