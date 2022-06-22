@@ -347,7 +347,7 @@ final class BitArrayTest extends TestCase
 
         $this->assertEquals(false, $arr0->get(1));
         $this->assertEquals(true, $arr1->get(1));
-        $this->assertEquals(0 /* ??? */, $arr0->popCount(true));
+        $this->assertEquals(0, $arr0->popCount(true));
         $this->assertEquals(1, $arr1->popCount(true));
 
 
@@ -360,7 +360,7 @@ final class BitArrayTest extends TestCase
 
         $this->assertEquals(true, $arr0->get(1));
         $this->assertEquals(true, $arr1->get(1));
-        $this->assertEquals(1 /* ??? */, $arr0->popCount(true));
+        $this->assertEquals(1, $arr0->popCount(true));
         $this->assertEquals(1, $arr1->popCount(true));
     }
 
@@ -375,7 +375,8 @@ final class BitArrayTest extends TestCase
         ];
     }
 
-    function provideTwoBitArrayImplementations(): array {
+    function provideTwoBitArrayImplementations(): array
+    {
         return DataProviders::cross(
             $this->provideBitArrayImplementation(),
             $this->provideBitArrayImplementation(),
