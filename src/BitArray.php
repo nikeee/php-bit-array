@@ -35,7 +35,7 @@ abstract class BitArray
      * Sets a value of the array.
      * @param $index int An integer `n` that is `0 <= n < this.length`.
      * @param $value bool The value to safe. Can be `true | false | 0 | 1`.
-     * @returns self Reference to the same {@link BitArray}, so multiple calls can be chained.
+     * @return self Reference to the same {@link BitArray}, so multiple calls can be chained.
      *
      * Time complexity: O(1)
      */
@@ -47,7 +47,7 @@ abstract class BitArray
      * Time complexity: O(1)
      *
      * @param $index int An integer `n` that is `0 <= n < this.length`.
-     * @returns bool value that indicates whether the bit was set.
+     * @return bool value that indicates whether the bit was set.
      */
     abstract function get(int $index): bool;
 
@@ -69,13 +69,13 @@ abstract class BitArray
      *
      * Time complexity: O(n) with n being the size of the array
      *
-     * @returns self Reference to the same {@link BitArray}, so multiple calls can be chained.
+     * @return self Reference to the same {@link BitArray}, so multiple calls can be chained.
      */
     abstract function clear(): self;
 
     /**
      * Sets all `{@link bool}`s in the array to `value`. Keeps the array length.
-     * @returns self Reference to the same {@link BitArray}, so multiple calls can be chained.
+     * @return self Reference to the same {@link BitArray}, so multiple calls can be chained.
      */
     abstract function fill(bool $value): self;
 
@@ -83,7 +83,7 @@ abstract class BitArray
      * Counts the number of bits set to a specific {@link $needleValue}.
      *
      * Time complexity: O(n) with n being the size of the array
-     * @returns int The number of bits set to a specific {@link $value}.
+     * @return int The number of bits set to a specific {@link $value}.
      */
     abstract function popCount(bool $value = true): int;
 
@@ -143,7 +143,7 @@ abstract class BitArray
         for ($i = 0; $i < $this->numberOfBits; ++$i) {
             $v0 = $this->get($i);
             $v1 = $other->get($i);
-            $this->set($i, $v0 & $v1);
+            $this->set($i, $v0 && $v1);
         }
     }
 
@@ -165,7 +165,7 @@ abstract class BitArray
         for ($i = 0; $i < $this->numberOfBits; ++$i) {
             $v0 = $this->get($i);
             $v1 = $other->get($i);
-            $this->set($i, $v0 | $v1);
+            $this->set($i, $v0 || $v1);
         }
     }
 
@@ -185,9 +185,9 @@ abstract class BitArray
         // Slow fallback implementation in case the user passed an array which is not the same type
         // (called by the child class)
         for ($i = 0; $i < $this->numberOfBits; ++$i) {
-            $v0 = $this->get($i);
-            $v1 = $other->get($i);
-            $this->set($i, ($v0 ^ $v1) & 0xff);
+            $v0 = (int)$this->get($i);
+            $v1 = (int)$other->get($i);
+            $this->set($i, (bool)($v0 ^ $v1));
         }
     }
 
@@ -241,7 +241,7 @@ abstract class BitArray
      * $b = BitArray::fromRawString($buffer);
      * ```
      * @param $rawString string Source buffer
-     * @returns self New {@link BitArray}
+     * @return self New {@link BitArray}
      */
     static function fromRawString(string $rawString): self
     {
@@ -254,7 +254,7 @@ abstract class BitArray
     /**
      * Creates an empty instance of {@link BitArray} with a specific size.
      * @param $numberOfBits int The number of bits.
-     * @returns self New {@link BitArray}
+     * @return self New {@link BitArray}
      */
     static function create(int $numberOfBits): self
     {

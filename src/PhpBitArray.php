@@ -62,7 +62,7 @@ class PhpBitArray extends BitArray
      * Sets a value of the array.
      * @param $index int An integer `n` that is `0 <= n < this.length`.
      * @param $value bool The value to safe. Can be `true | false | 0 | 1`.
-     * @returns self Reference to the same {@link BitArray}, so multiple calls can be chained.
+     * @return self Reference to the same {@link BitArray}, so multiple calls can be chained.
      *
      * Time complexity: O(1)
      */
@@ -93,7 +93,7 @@ class PhpBitArray extends BitArray
      * Time complexity: O(1)
      *
      * @param $index int An integer `n` that is `0 <= n < this.length`.
-     * @returns bool value that indicates whether the bit was set.
+     * @return bool value that indicates whether the bit was set.
      */
     function get(int $index): bool
     {
@@ -113,7 +113,7 @@ class PhpBitArray extends BitArray
      *
      * Time complexity: O(n) with n being the size of the array
      *
-     * @returns self Reference to the same {@link BitArray}, so multiple calls can be chained.
+     * @return self Reference to the same {@link BitArray}, so multiple calls can be chained.
      */
     function clear(): self
     {
@@ -122,7 +122,7 @@ class PhpBitArray extends BitArray
 
     /**
      * Sets all `{@link bool}`s in the array to `value`. Keeps the array length.
-     * @returns self Reference to the same {@link BitArray}, so multiple calls can be chained.
+     * @return self Reference to the same {@link BitArray}, so multiple calls can be chained.
      */
     function fill(bool $value): self
     {
@@ -135,7 +135,7 @@ class PhpBitArray extends BitArray
      * Counts the number of bits set to a specific {@link $needleValue}.
      *
      * Time complexity: O(n) with n being the size of the array
-     * @returns int The number of bits set to a specific {@link $value}.
+     * @return int The number of bits set to a specific {@link $value}.
      */
     function popCount(bool $value = true): int
     {
