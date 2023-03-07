@@ -1,9 +1,10 @@
 version: 2
 updates:
-  - package-ecosystem: "cargo"
+  - package-ecosystem: "composer"
     directory: "/"
     schedule:
       interval: "monthly"
+    versioning-strategy: increase
 
   - package-ecosystem: "github-actions"
     directory: "/"
