@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cae75af6ff4c2a0cada28229d2003141",
+    "content-hash": "e939a7ea2ea1cce85fabd7aa3d09b42c",
     "packages": [],
     "packages-dev": [
         {
@@ -727,42 +727,47 @@
         },
         {
             "name": "rawr/cross-data-providers",
-            "version": "v2.3.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/T-Regx/CrossDataProviders.git",
-                "reference": "987c6d434084bfad4866b702132f12f6f8e9b704"
+                "url": "https://github.com/t-regx/CrossDataProviders.git",
+                "reference": "96742582d7e2489bb75d36a828e699977dd47e64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/T-Regx/CrossDataProviders/zipball/987c6d434084bfad4866b702132f12f6f8e9b704",
-                "reference": "987c6d434084bfad4866b702132f12f6f8e9b704",
+                "url": "https://api.github.com/repos/t-regx/CrossDataProviders/zipball/96742582d7e2489bb75d36a828e699977dd47e64",
+                "reference": "96742582d7e2489bb75d36a828e699977dd47e64",
                 "shasum": ""
             },
             "require": {
-                "ext-json": "*",
-                "php": "^8.0 || ^7.0"
+                "php": ">=7.1.0"
             },
             "require-dev": {
-                "php-coveralls/php-coveralls": "^2.0",
-                "phpunit/phpunit": "*"
+                "phpunit/phpunit": "^9.5.4 || ^8.0 || ^7.5"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "TRegx\\": "src/TRegx"
+                    "TRegx\\PhpUnit\\DataProviders\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "Allows you to use mix multiple PhpUnit @dataProvider without duplication",
+            "authors": [
+                {
+                    "name": "Daniel Wilkowski",
+                    "homepage": "https://t-regx.com/"
+                }
+            ],
+            "description": "Lightweight builder for PhpUnit data providers",
             "support": {
-                "issues": "https://github.com/T-Regx/CrossDataProviders/issues",
-                "source": "https://github.com/T-Regx/CrossDataProviders/tree/v2.3.0"
+                "issues": "https://github.com/t-regx/CrossDataProviders/issues",
+                "source": "https://github.com/t-regx/CrossDataProviders/tree/3.0.0"
             },
-            "time": "2020-11-11T23:14:16+00:00"
+            "abandoned": "rawr/phpunit-data-provider",
+            "time": "2023-08-06T11:40:04+00:00"
         },
         {
             "name": "sebastian/cli-parser",
